@@ -1,23 +1,27 @@
 // src/routes/Routes.js
-import React, { useState } from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import Navbar from '../components/Navbar';
+import React, {useState} from 'react';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import NavigationBar from '../components/Navbar';
 import Products from '../pages/Products';
 import Orders from '../pages/Orders';
 import Cart from '../pages/Cart';
 import Checkout from '../pages/Checkout';
+import PaymentForm from '../components/PaymentForm';
+import Review from '../components/Review';
 
 const AppRoutes = () => {
     const [cart, setCart] = useState([]);
-
     return (
         <Router>
-            <Navbar />
+            <NavigationBar/>
             <Routes>
-                <Route path="/" element={<Products cart={cart} setCart={setCart} />} />
-                <Route path="/orders" element={<Orders />} />
-                <Route path="/cart" element={<Cart cart={cart} setCart={setCart} />} />
-                <Route path="/checkout" element={<Checkout cart={cart} />} />
+                <Route path="/" element={<Products cart={cart} setCart={setCart}/>}/>
+                <Route path="/products" element={<Products cart={cart} setCart={setCart}/>}/>
+                <Route path="/orders" element={<Orders/>}/>
+                <Route path="/cart" element={<Cart cart={cart} setCart={setCart}/>}/>
+                <Route path="/checkout" element={<Checkout cart={cart}/>}/>
+                <Route path="/payment" element={<PaymentForm/>}/>
+                <Route path="/review" element={<Review cart={cart}/>}/>
             </Routes>
         </Router>
     );

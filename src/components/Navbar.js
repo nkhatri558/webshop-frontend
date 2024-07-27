@@ -3,7 +3,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import '../css/Navbar.css';
 
-const Navbar = ({ cartCount }) => {
+const NavigationBar = ({ cartCount }) => {
     return (
         <nav className="navbar navbar-expand-lg navbar-light bg-light">
             <div className="container">
@@ -31,4 +31,4 @@ const Navbar = ({ cartCount }) => {
     );
 };
 
-export default Navbar;
+export default NavigationBar;

@@ -1,22 +1,5 @@
 /* src/css/ProductDetail.css */
-
-.container {
-    margin-top: 20px;
-}
-
-.img-fluid {
-    max-width: 100%;
+.modal-body img {
+    width: 100%;
     height: auto;
-}
-
-h2 {
-    margin-bottom: 20px;
-}
-
-p {
-    margin-bottom: 10px;
-}
-
-button {
-    margin-top: 20px;
 }
