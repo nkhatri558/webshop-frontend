@@ -1,82 +1,106 @@
 // src/pages/Products.js
 import React, { useState } from 'react';
-import ProductCard from '../components/ProductCard';
+import { Card, Button, Row, Col, Form } from 'react-bootstrap';
+import products from '../data/products';
 import '../css/Products.css';
 
-const products = [
-    { id: 1, name: 'Product 1', price: 29.99, stock: 10, category: 'Category 1', image: 'https://via.placeholder.com/150' },
-    { id: 2, name: 'Product 2', price: 49.99, stock: 5, category: 'Category 2', image: 'https://via.placeholder.com/150' },
-    { id: 3, name: 'Product 3', price: 19.99, stock: 15, category: 'Category 1', image: 'https://via.placeholder.com/150' },
-    { id: 4, name: 'Product 4', price: 99.99, stock: 3, category: 'Category 2', image: 'https://via.placeholder.com/150' },
-];
+const Products = ({ cart, setCart }) => {
+    const [searchTerm, setSearchTerm] = useState('');
+    const [sortOption, setSortOption] = useState('');
+    const [selectedCategory, setSelectedCategory] = useState('');
 
-const Products = ({ addToCart }) => {
-    const [filter, setFilter] = useState({ category: '', name: '' });
-    const [sort, setSort] = useState({ key: 'price', order: 'asc' });
+    const addToCart = (product) => {
+        const updatedCart = [...cart];
+        const found = updatedCart.find(item => item.id === product.id);
 
-    const handleFilterChange = (e) => {
-        setFilter({ ...filter, [e.target.name]: e.target.value });
+        if (found) {
+            found.quantity += 1;
+        } else {
+            updatedCart.push({ ...product, quantity: 1 });
+        }
+
+        setCart(updatedCart);
     };
 
-    const handleSortChange = (e) => {
-        const [key, order] = e.target.value.split('-');
-        setSort({ key, order });
+    const handleSearch = (e) => {
+        setSearchTerm(e.target.value);
     };
 
-    const filteredProducts = products
+    const handleSort = (e) => {
+        setSortOption(e.target.value);
+    };
+
+    const handleCategoryChange = (e) => {
+        setSelectedCategory(e.target.value);
+    };
+
+    const sortedAndFilteredProducts = products
         .filter(product =>
-            product.name.toLowerCase().includes(filter.name.toLowerCase()) &&
-            (!filter.category || product.category === filter.category)
-        )
+            (product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                product.category.toLowerCase().includes(searchTerm.toLowerCase())) &&
+            (selectedCategory === '' || product.category === selectedCategory))
         .sort((a, b) => {
-            if (sort.order === 'asc') {
-                return a[sort.key] > b[sort.key] ? 1 : -1;
-            } else {
-                return a[sort.key] < b[sort.key] ? 1 : -1;
-            }
+            if (sortOption === 'price-asc') return a.price - b.price;
+            if (sortOption === 'price-desc') return b.price - a.price;
+            if (sortOption === 'stock-asc') return a.stock - b.stock;
+            if (sortOption === 'stock-desc') return b.stock - a.stock;
+            return 0;
         });
+
+    const uniqueCategories = [...new Set(products.map(product => product.category))];
 
     return (
         <div className="container">
-            <div className="row mb-3">
-                <div className="col-md-4">
-                    <input
+            <h2 className="my-4">Products</h2>
+            <Form className="row mb-3">
+                <Form.Group controlId="search" className="col-md-4">
+                    <Form.Control
                         type="text"
-                        className="form-control"
-                        name="name"
-                        placeholder="Search by name"
-                        value={filter.name}
-                        onChange={handleFilterChange}
+                        placeholder="Search products"
+                        value={searchTerm}
+                        onChange={handleSearch}
                     />
-                </div>
-                <div className="col-md-4">
-                    <select
-                        className="form-control"
-                        name="category"
-                        value={filter.category}
-                        onChange={handleFilterChange}
-                    >
+                </Form.Group>
+                <Form.Group controlId="category" className="col-md-4">
+                    <Form.Control as="select" value={selectedCategory} onChange={handleCategoryChange}>
                         <option value="">All Categories</option>
-                        <option value="Category 1">Category 1</option>
-                        <option value="Category 2">Category 2</option>
-                    </select>
-                </div>
-                <div className="col-md-4">
-                    <select className="form-control" onChange={handleSortChange}>
-                        <option value="price-asc">Sort by Price: Low to High</option>
-                        <option value="price-desc">Sort by Price: High to Low</option>
-                        <option value="stock-asc">Sort by Stock: Low to High</option>
-                        <option value="stock-desc">Sort by Stock: High to Low</option>
-                    </select>
-                </div>
-            </div>
-            <div className="row">
-                {filteredProducts.map(product => (
-                    <div key={product.id} className="col-md-3">
-                        <ProductCard product={product} addToCart={addToCart} />
-                    </div>
+                        {uniqueCategories.map((category, index) => (
+                            <option key={index} value={category}>
+                                {category}
+                            </option>
+                        ))}
+                    </Form.Control>
+                </Form.Group>
+                <Form.Group controlId="sort" className="col-md-4">
+                    <Form.Control as="select" value={sortOption} onChange={handleSort}>
+                        <option value="">Sort by</option>
+                        <option value="price-asc">Price: Low to High</option>
+                        <option value="price-desc">Price: High to Low</option>
+                        <option value="stock-asc">Stock: Low to High</option>
+                        <option value="stock-desc">Stock: High to Low</option>
+                    </Form.Control>
+                </Form.Group>
+            </Form>
+            <Row>
+                {sortedAndFilteredProducts.map(product => (
+                    <Col key={product.id} sm={12} md={6} lg={4}>
+                        <Card className="mb-4">
+                            <Card.Img variant="top" src={product.image} />
+                            <Card.Body>
+                                <Card.Title>{product.name}</Card.Title>
+                                <Card.Text>
+                                    {product.description}
+                                    <br />
+                                    <strong>${product.price}</strong>
+                                </Card.Text>
+                                <Button variant="primary" onClick={() => addToCart(product)}>
+                                    Add to Cart
+                                </Button>
+                            </Card.Body>
+                        </Card>
+                    </Col>
                 ))}
-            </div>
+            </Row>
         </div>
     );
 };

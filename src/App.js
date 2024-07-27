@@ -1,11 +1,9 @@
 // src/App.js
 import React, { useState } from 'react';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { BrowserRouter as Router } from 'react-router-dom';
 import './css/App.css';
 import Navbar from './components/Navbar';
-import Products from './pages/Products';
-import Orders from './pages/Orders';
-import Cart from './pages/Cart';
+import AppRoutes from './routes/Routes';
 
 function App() {
     const [cart, setCart] = useState([]);
@@ -18,11 +16,7 @@ function App() {
         <Router>
             <div className="App">
                 <Navbar cartCount={cart.length} />
-                <Routes>
-                    <Route path="/" element={<Products addToCart={addToCart} />} />
-                    <Route path="/orders" element={<Orders />} />
-                    <Route path="/cart" element={<Cart cart={cart} />} />
-                </Routes>
+                <AppRoutes cart={cart} addToCart={addToCart} />
             </div>
         </Router>
     );

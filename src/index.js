@@ -1,13 +1,13 @@
 // src/index.js
-import 'bootstrap/dist/css/bootstrap.min.css';
-import './index.css';
+import 'bootstrap/dist/css/bootstrap.min.css'; // Import Bootstrap CSS
 import React from 'react';
 import ReactDOM from 'react-dom';
-import App from './App';
+import './index.css';
+import AppRoutes from './routes/Routes';
 
 ReactDOM.render(
     <React.StrictMode>
-        <App />
+        <AppRoutes />
     </React.StrictMode>,
     document.getElementById('root')
 );
