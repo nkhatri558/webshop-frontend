@@ -1,91 +1,36 @@
-// // src/pages/Products.js
-// import React, { useState } from 'react';
-// import { Container, Row, Col, Form } from 'react-bootstrap';
-// import ProductCard from '../components/ProductCard';
-// import '../css/Products.css';
-// import productsData from '../data/products';
-//
-// const Products = () => {
-//     const [products] = useState(productsData);
-//     const [searchTerm, setSearchTerm] = useState('');
-//     const [categoryFilter, setCategoryFilter] = useState('');
-//     const [currentPage, setCurrentPage] = useState(1);
-//     const productsPerPage = 9;
-//
-//     const handleSearch = (e) => {
-//         setSearchTerm(e.target.value);
-//     };
-//
-//     const handleFilter = (e) => {
-//         setCategoryFilter(e.target.value);
-//     };
-//
-//     const filteredProducts = products
-//         .filter((product) =>
-//             product.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
-//             (categoryFilter === '' || product.category === categoryFilter)
-//         );
-//
-//     const indexOfLastProduct = currentPage * productsPerPage;
-//     const indexOfFirstProduct = indexOfLastProduct - productsPerPage;
-//     const currentProducts = filteredProducts.slice(indexOfFirstProduct, indexOfLastProduct);
-//
-//     const paginate = (pageNumber) => setCurrentPage(pageNumber);
-//
-//     return (
-//         <Container>
-//             <h2 className="my-4">Products</h2>
-//             <Form className="d-flex mb-4">
-//                 <Form.Control
-//                     type="text"
-//                     placeholder="Search by name"
-//                     className="me-2"
-//                     value={searchTerm}
-//                     onChange={handleSearch}
-//                 />
-//                 <Form.Select value={categoryFilter} onChange={handleFilter} className="me-2">
-//                     <option value="">All Categories</option>
-//                     <option value="category1">Category 1</option>
-//                     <option value="category2">Category 2</option>
-//                 </Form.Select>
-//             </Form>
-//             <Row>
-//                 {currentProducts.map((product) => (
-//                     <Col key={product.id} md={4} className="mb-4">
-//                         <ProductCard product={product} />
-//                     </Col>
-//                 ))}
-//             </Row>
-//             <ul className="pagination">
-//                 {Array.from({ length: Math.ceil(filteredProducts.length / productsPerPage) }, (_, index) => (
-//                     <li key={index} className={`page-item ${currentPage === index + 1 ? 'active' : ''}`}>
-//                         <button onClick={() => paginate(index + 1)} className="page-link">
-//                             {index + 1}
-//                         </button>
-//                     </li>
-//                 ))}
-//             </ul>
-//         </Container>
-//     );
-// };
-//
-// export default Products;
-//
-//
-
-// src/pages/Products.js
-import React, { useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import { Card, Button, Row, Col, Form } from 'react-bootstrap';
-import productsData from '../data/products';
 import '../css/Products.css';
+import axios from "../api/axios";
+import Swal from "sweetalert2";
 
-const Products = ({ cart, setCart }) => {
+const Products = ({ cart, setCart, cartCount, setCartCount }) => {
     const [searchTerm, setSearchTerm] = useState('');
     const [sortOption, setSortOption] = useState('');
     const [selectedCategory, setSelectedCategory] = useState('');
-    const [products] = useState(productsData);
+    const [products, setProducts] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
+    const [quantity, setQuantity] = useState(1);
     const productsPerPage = 9;
+
+    const fetchProducts = async () => {
+        try {
+            const response = await axios
+                .get("/products")
+                .then( response => {
+                    console.log(response.data);
+                    setProducts(response.data);
+                    }
+                );
+            setProducts(response.data);
+        } catch (error) {
+            console.error("Error fetching products:", error);
+        }
+    };
+
+    useEffect(() => {
+        fetchProducts();
+    }, []);
 
 
     const paginate = (pageNumber) => setCurrentPage(pageNumber);
@@ -93,14 +38,23 @@ const Products = ({ cart, setCart }) => {
     const addToCart = (product) => {
         const updatedCart = [...cart];
         const found = updatedCart.find(item => item.id === product.id);
+        let quant = 1;
 
         if (found) {
             found.quantity += 1;
+            quant = found.quantity;
         } else {
             updatedCart.push({ ...product, quantity: 1 });
         }
 
         setCart(updatedCart);
+        setCartCount(cartCount + quant);
+        Swal.fire({
+            icon: 'success',
+            title: 'Added to Cart',
+            text: `${product.name} has been added to your cart.`,
+            timer: 1500
+        });
     };
 
     const handleSearch = (e) => {
@@ -115,13 +69,13 @@ const Products = ({ cart, setCart }) => {
         setSelectedCategory(e.target.value);
     };
 
-    const filteredProducts = productsData
+    const filteredProducts = products
         .filter((product) =>
             product.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
             (selectedCategory === '' || product.category === selectedCategory)
         );
 
-    const sortedAndFilteredProducts = productsData
+    const sortedAndFilteredProducts = products
         .filter(product =>
             (product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                 product.category.toLowerCase().includes(searchTerm.toLowerCase())) &&
@@ -180,6 +134,15 @@ const Products = ({ cart, setCart }) => {
                                     <br />
                                     <strong>${product.price}</strong>
                                 </Card.Text>
+                                <Form.Group controlId="formQuantity">
+                                    <Form.Label>Quantity</Form.Label>
+                                    <Form.Control
+                                        type="number"
+                                        min="1"
+                                        value={quantity}
+                                        onChange={(e) => setQuantity(parseInt(e.target.value))}
+                                    />
+                                </Form.Group>
                                 <Button variant="primary" onClick={() => addToCart(product)}>
                                     Add to Cart
                                 </Button>

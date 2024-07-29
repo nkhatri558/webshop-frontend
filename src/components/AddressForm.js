@@ -104,13 +104,13 @@ const AddressForm = ({ nextStep, handleChange, values }) => {
                         </Form.Group>
                     </Col>
                     <Col md={6}>
-                        <Form.Group controlId="zip">
+                        <Form.Group controlId="postalCode">
                             <Form.Label>Zip / Postal Code</Form.Label>
                             <Form.Control
                                 type="text"
                                 placeholder="Zip / Postal Code"
-                                onChange={handleChange('zip')}
-                                defaultValue={values.zip}
+                                onChange={handleChange('postalCode')}
+                                defaultValue={values.postalCode}
                                 required
                             />
                         </Form.Group>

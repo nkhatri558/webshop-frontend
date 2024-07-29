@@ -21,9 +21,6 @@ const NavigationBar = ({ cartCount }) => {
                                 Cart <span className="badge badge-pill badge-primary">{cartCount}</span>
                             </Link>
                         </li>
-                        <li className="nav-item">
-                            <Link className="nav-link" to="/checkout">Checkout</Link>
-                        </li>
                     </ul>
                 </div>
             </div>

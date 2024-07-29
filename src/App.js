@@ -5,6 +5,7 @@ import './css/App.css';
 
 function App() {
     const [cart, setCart] = useState([]);
+
     const addToCart = (product) => {
         setCart([...cart, product]);
     };

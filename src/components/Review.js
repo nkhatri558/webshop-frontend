@@ -1,4 +1,3 @@
-// src/pages/Review.js
 import React from 'react';
 import { Container, Button, ListGroup } from 'react-bootstrap';
 import '../css/Checkout.css';
