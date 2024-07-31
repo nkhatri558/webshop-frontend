@@ -1,0 +1,42 @@
+import React, { useState, useEffect } from 'react';
+import { Container, Table } from 'react-bootstrap';
+import axios from 'axios';
+
+const ManageInventory = () =>{
+    const [products, setProducts] = useState([]);
+
+    useEffect(() => {
+        fetchProducts();
+    }, []);
+
+    const fetchProducts = async () => {
+        const response = await axios.get('/api/admin/products');
+        setProducts(response.data.filter(product => product.stock < 5));
+    };
+
+    return (
+        <Container>
+            <h1>Manage Inventory</h1>
+            <Table striped bordered hover>
+                <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Name</th>
+                    <th>Stock</th>
+                </tr>
+                </thead>
+                <tbody>
+                {products.map(product => (
+                    <tr key={product.id}>
+                        <td>{product.id}</td>
+                        <td>{product.name}</td>
+                        <td>{product.stock}</td>
+                    </tr>
+                ))}
+                </tbody>
+            </Table>
+        </Container>
+    );
+}
+
+export default ManageInventory;

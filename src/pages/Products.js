@@ -10,7 +10,7 @@ const Products = ({ cart, setCart, cartCount, setCartCount }) => {
     const [selectedCategory, setSelectedCategory] = useState('');
     const [products, setProducts] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
-    const [quantity, setQuantity] = useState(1);
+    const [productQuantity, setProductQuantity] = useState(1);
     const productsPerPage = 9;
 
     const fetchProducts = async () => {
@@ -126,7 +126,7 @@ const Products = ({ cart, setCart, cartCount, setCartCount }) => {
                 {sortedAndFilteredProducts.map(product => (
                     <Col key={product.id} sm={12} md={6} lg={4}>
                         <Card className="mb-4">
-                            <Card.Img variant="top" src={product.image} />
+                            <Card.Img variant="top" src={`data:image/jpeg;base64,${btoa(String.fromCharCode(...new Uint8Array(product.image)))}`} />
                             <Card.Body>
                                 <Card.Title>{product.name}</Card.Title>
                                 <Card.Text>
@@ -139,8 +139,8 @@ const Products = ({ cart, setCart, cartCount, setCartCount }) => {
                                     <Form.Control
                                         type="number"
                                         min="1"
-                                        value={quantity}
-                                        onChange={(e) => setQuantity(parseInt(e.target.value))}
+                                        value={productQuantity}
+                                        onChange={(e) => setProductQuantity(parseInt(e.target.value))}
                                     />
                                 </Form.Group>
                                 <Button variant="primary" onClick={() => addToCart(product)}>
