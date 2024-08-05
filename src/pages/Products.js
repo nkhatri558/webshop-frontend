@@ -90,6 +90,8 @@ const Products = ({ cart, setCart, cartCount, setCartCount }) => {
 
     const uniqueCategories = [...new Set(products.map(product => product.category))];
 
+
+
     return (
         <div className="container">
             <h2 className="my-4">Products</h2>
@@ -126,7 +128,7 @@ const Products = ({ cart, setCart, cartCount, setCartCount }) => {
                 {sortedAndFilteredProducts.map(product => (
                     <Col key={product.id} sm={12} md={6} lg={4}>
                         <Card className="mb-4">
-                            <Card.Img variant="top" src={`data:image/jpeg;base64,${btoa(String.fromCharCode(...new Uint8Array(product.image)))}`} />
+                            <Card.Img variant="top" src={product.image} />
                             <Card.Body>
                                 <Card.Title>{product.name}</Card.Title>
                                 <Card.Text>

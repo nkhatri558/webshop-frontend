@@ -1,17 +1,18 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Table, Button, Modal, Form } from 'react-bootstrap';
-import axios from 'axios';
+import axios from '../../api/axios';
+import { Table, Button, Modal, Form } from 'react-bootstrap';
 
 const ManageProducts = () => {
     const [products, setProducts] = useState([]);
-    const [show, setShow] = useState(false);
-    const [product, setProduct] = useState({
+    const [showModal, setShowModal] = useState(false);
+    const [editingProduct, setEditingProduct] = useState(null);
+    const [formData, setFormData] = useState({
         name: '',
         description: '',
         category: '',
-        price: 0,
-        stock: 0,
-        image: null
+        price: '',
+        stock: '',
+        image: null,
     });
 
     useEffect(() => {
@@ -19,57 +20,78 @@ const ManageProducts = () => {
     }, []);
 
     const fetchProducts = async () => {
-        const response = await axios.get('/api/products');
+        const response = await axios.get('/products');
         setProducts(response.data);
     };
 
-    const handleShow = () => setShow(true);
-    const handleClose = () => setShow(false);
+    const handleShow = (product) => {
+        setEditingProduct(product);
+        setFormData({
+            name: product ? product.name : '',
+            description: product ? product.description : '',
+            category: product ? product.category : '',
+            price: product ? product.price : '',
+            stock: product ? product.stock : '',
+            image: null,
+        });
+        setShowModal(true);
+    };
+
+    const handleClose = () => {
+        setShowModal(false);
+        setEditingProduct(null);
+    };
 
     const handleChange = (e) => {
         const { name, value } = e.target;
-        setProduct((prevState) => ({
-            ...prevState,
-            [name]: value
-        }));
+        setFormData({
+            ...formData,
+            [name]: value,
+        });
     };
 
     const handleFileChange = (e) => {
-        setProduct((prevState) => ({
-            ...prevState,
-            image: e.target.files[0]
-        }));
+        setFormData({
+            ...formData,
+            image: e.target.files[0],
+        });
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        const formData = new FormData();
-        formData.append('name', product.name);
-        formData.append('description', product.description);
-        formData.append('category', product.category);
-        formData.append('price', product.price);
-        formData.append('stock', product.stock);
-        formData.append('image', product.image);
 
-        await axios.post('/api/products', formData);
+        const formDataToSend = new FormData();
+        formDataToSend.append('name', formData.name);
+        formDataToSend.append('description', formData.description);
+        formDataToSend.append('category', formData.category);
+        formDataToSend.append('price', formData.price);
+        formDataToSend.append('stock', formData.stock);
+        if (formData.image) {
+            formDataToSend.append('image', formData.image);
+        }
+
+        if (editingProduct) {
+            await axios.put(`/products/${editingProduct.id}`, formDataToSend);
+        } else {
+            await axios.post('/products', formDataToSend);
+        }
+
         fetchProducts();
         handleClose();
     };
 
     const handleDelete = async (id) => {
-        await axios.delete(`/api/products/${id}`);
+        await axios.delete(`/products/${id}`);
         fetchProducts();
     };
 
     return (
-        <Container>
-            <h1>Manage Products</h1>
-            <Button variant="primary" onClick={handleShow}>
-                Add Product
-            </Button>
-            <Table striped bordered hover className="mt-3">
+        <div>
+            <Button variant="primary" onClick={() => handleShow(null)}>Add Product</Button>
+            <Table striped bordered hover className="mt-4">
                 <thead>
                 <tr>
+                    <th>Image</th>
                     <th>Name</th>
                     <th>Description</th>
                     <th>Category</th>
@@ -79,89 +101,95 @@ const ManageProducts = () => {
                 </tr>
                 </thead>
                 <tbody>
-                {products.map((product) => (
+                {products.map(product => (
                     <tr key={product.id}>
+                        <td><img src={product.image} alt={product.name} style={{ width: '100px' }} /></td>
                         <td>{product.name}</td>
                         <td>{product.description}</td>
                         <td>{product.category}</td>
-                        <td>{product.price}</td>
+                        <td>${product.price}</td>
                         <td>{product.stock}</td>
                         <td>
-                            <Button variant="danger" onClick={() => handleDelete(product.id)}>
-                                Delete
-                            </Button>
+                            <Button variant="warning" onClick={() => handleShow(product)}>Edit</Button>{' '}
+                            <Button variant="danger" onClick={() => handleDelete(product.id)}>Delete</Button>
                         </td>
                     </tr>
                 ))}
                 </tbody>
             </Table>
 
-            <Modal show={show} onHide={handleClose}>
+            <Modal show={showModal} onHide={handleClose}>
                 <Modal.Header closeButton>
-                    <Modal.Title>Add Product</Modal.Title>
+                    <Modal.Title>{editingProduct ? 'Edit Product' : 'Add Product'}</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                     <Form onSubmit={handleSubmit}>
-                        <Form.Group controlId="formName">
+                        <Form.Group controlId="name">
                             <Form.Label>Name</Form.Label>
                             <Form.Control
                                 type="text"
                                 name="name"
-                                value={product.name}
+                                value={formData.name}
                                 onChange={handleChange}
+                                required
                             />
                         </Form.Group>
-                        <Form.Group controlId="formDescription">
+                        <Form.Group controlId="description">
                             <Form.Label>Description</Form.Label>
                             <Form.Control
                                 type="text"
                                 name="description"
-                                value={product.description}
+                                value={formData.description}
                                 onChange={handleChange}
+                                required
                             />
                         </Form.Group>
-                        <Form.Group controlId="formCategory">
+                        <Form.Group controlId="category">
                             <Form.Label>Category</Form.Label>
                             <Form.Control
                                 type="text"
                                 name="category"
-                                value={product.category}
+                                value={formData.category}
                                 onChange={handleChange}
+                                required
                             />
                         </Form.Group>
-                        <Form.Group controlId="formPrice">
+                        <Form.Group controlId="price">
                             <Form.Label>Price</Form.Label>
                             <Form.Control
                                 type="number"
                                 name="price"
-                                value={product.price}
+                                value={formData.price}
                                 onChange={handleChange}
+                                required
                             />
                         </Form.Group>
-                        <Form.Group controlId="formStock">
+                        <Form.Group controlId="stock">
                             <Form.Label>Stock</Form.Label>
                             <Form.Control
                                 type="number"
                                 name="stock"
-                                value={product.stock}
+                                value={formData.stock}
                                 onChange={handleChange}
+                                required
                             />
                         </Form.Group>
-                        <Form.Group controlId="formImage">
+                        <Form.Group controlId="image">
                             <Form.Label>Image</Form.Label>
                             <Form.Control
                                 type="file"
+                                name="image"
                                 onChange={handleFileChange}
                             />
                         </Form.Group>
-                        <Button variant="primary" type="submit">
-                            Add Product
+                        <Button variant="primary" type="submit" className="mt-3">
+                            Save
                         </Button>
                     </Form>
                 </Modal.Body>
             </Modal>
-        </Container>
+        </div>
     );
-}
+};
 
 export default ManageProducts;

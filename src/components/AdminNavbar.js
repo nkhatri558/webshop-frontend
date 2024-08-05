@@ -19,6 +19,9 @@ function AdminNavbar() {
                         <Nav.Link>Manage Inventory</Nav.Link>
                     </LinkContainer>
                 </Nav>
+                <Navbar.Text>
+                    Signed in as: Admin
+                </Navbar.Text>
             </Navbar.Collapse>
         </Navbar>
     );

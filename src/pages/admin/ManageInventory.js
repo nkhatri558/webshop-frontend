@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Container, Table } from 'react-bootstrap';
-import axios from 'axios';
+import axios from '../../api/axios';
 
 const ManageInventory = () =>{
     const [products, setProducts] = useState([]);
@@ -10,8 +10,8 @@ const ManageInventory = () =>{
     }, []);
 
     const fetchProducts = async () => {
-        const response = await axios.get('/api/admin/products');
-        setProducts(response.data.filter(product => product.stock < 5));
+        const response = await axios.get('/products');
+        setProducts(response.data);
     };
 
     return (

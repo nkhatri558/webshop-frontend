@@ -78,7 +78,7 @@ const Checkout = ({cart}) => {
                 }).then(() => {
                     clearCart();
                     setFormData(initialCustomerState);
-                    navigate("/products");
+                    navigate("/customer/products");
                 });
             }
         } catch (error) {

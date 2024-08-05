@@ -7,10 +7,10 @@ import {Route, Routes} from "react-router-dom";
 const AdminRoutes = () => {
     return (
         <Routes>
-            <Route path="/admin/" element={<AdminDashboard/>} />
-            <Route path="/admin/manage-products" element={<ManageProducts/>} />
-            <Route path="/admin/manage-orders" element={<ManageOrders/>} />
-            <Route path="/admin/manage-inventory" element={<ManageInventory/>} />
+            <Route path="/" element={<AdminDashboard/>} />
+            <Route path="/manage-products" element={<ManageProducts/>} />
+            <Route path="/manage-orders" element={<ManageOrders/>} />
+            <Route path="/manage-inventory" element={<ManageInventory/>} />
         </Routes>
     );
 };

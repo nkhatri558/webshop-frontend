@@ -1,22 +1,33 @@
 // src/pages/Orders.js
-import React, { useState } from 'react';
+import React, { useEffect, useState} from 'react';
 import DataTable from 'react-data-table-component';
 import { Button, Container, Modal } from 'react-bootstrap';
 import '../css/Orders.css';
+import axios from '../api/axios';
 
 const Orders = () => {
-    const orders = [
-        {
-            id: 1,
-            date: '2023-12-01',
-            status: 'Pending',
-            items: [
-                { name: 'Product 1', price: 10, quantity: 2 },
-                { name: 'Product 2', price: 15, quantity: 1 }
-            ]
-        },
-        // Add more orders as needed
-    ];
+    const user = JSON.parse(sessionStorage.getItem("user"));
+    const [orders, setOrders] = useState([]);
+    const fetchOrders = async () => {
+        try {
+            console.log(user);
+            console.log(user.email);
+            const url = `/orders/customer?email=${user.email}`;
+            console.log(url);
+            const response = await axios
+                .get(`/orders/customer?email=${user.email}`)
+                .then(response => {
+                    console.log(response.data);
+                    setOrders(response.data)
+                });
+            setOrders(response.data);
+        } catch (error) {
+            console.error("Error fetching products:", error);
+        }
+    };
+    useEffect(() => {
+        fetchOrders();
+    }, []);
     const [viewingOrder, setViewingOrder] = useState(null);
     const [showModal, setShowModal] = useState(false);
 

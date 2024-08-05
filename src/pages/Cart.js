@@ -13,7 +13,7 @@ const Cart = ({ cart, setCart }) => {
     };
 
     const handleCheckout = () => {
-        navigate('/checkout');
+        navigate('/customer/checkout');
     };
 
     return (
