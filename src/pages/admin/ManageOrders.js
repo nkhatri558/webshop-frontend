@@ -42,7 +42,6 @@ const ManageOrders = () => {
             setOrders(response.data);
         } catch (error) {
             console.error('Error fetching orders:', error);
-            setOrders([]);
         }
     };
 
@@ -83,18 +82,18 @@ const ManageOrders = () => {
         const { name, value } = e.target;
         if (name.includes('customer.')) {
             const customerField = name.split('.')[1];
-            setFormData({
-                ...formData,
+            setFormData(prevFormData => ({
+                ...prevFormData,
                 customer: {
-                    ...formData.customer,
+                    ...prevFormData.customer,
                     [customerField]: value
                 }
-            });
+            }));
         } else {
-            setFormData({
-                ...formData,
+            setFormData(prevFormData => ({
+                ...prevFormData,
                 [name]: value
-            });
+            }));
         }
     };
 
@@ -182,12 +181,14 @@ const ManageOrders = () => {
                         <Form.Group controlId="status">
                             <Form.Label>Status</Form.Label>
                             <Form.Control
-                                type="text"
+                                as="select"
                                 name="status"
                                 value={formData.status}
-                                onChange={handleChange}
-                                required
-                            />
+                                onChange={handleChange}>
+                                <option value="Pending">Pending</option>
+                                <option value="Confirmed">Confirmed</option>
+                                <option value="Shipped">Shipped</option>
+                            </Form.Control>
                         </Form.Group>
                         <Form.Group controlId="customer.firstName">
                             <Form.Label>Customer First Name</Form.Label>
