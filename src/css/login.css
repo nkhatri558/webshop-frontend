@@ -1,0 +1,19 @@
+/* LoginPage.css */
+
+.login-card {
+    padding: 2rem;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    border-radius: 10px;
+}
+
+.login-card .form-control {
+    margin-bottom: 1rem;
+}
+
+.login-card button {
+    margin-top: 1rem;
+}
+
+body {
+    background-color: #f8f9fa;
+}

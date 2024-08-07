@@ -1,24 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from '../api/axios';
-import styled from 'styled-components';
-import { Form, Button, Card } from 'react-bootstrap';
-
-const LoginWrapper = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
-  background-color: #f8f9fa;
-`;
-
-const StyledCard = styled(Card)`
-  padding: 20px;
-  width: 100%;
-  max-width: 400px;
-  border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-`;
+import {Form, Button, Card, Container, Row, Col} from 'react-bootstrap';
+import '../css/login.css';
 
 const Login = () => {
     const [email, setEmail] = useState('');
@@ -53,35 +37,41 @@ const Login = () => {
     };
 
     return (
-        <LoginWrapper>
-            <StyledCard>
-                <Card.Body>
-                    <Card.Title className="text-center">Login</Card.Title>
-                    <Form>
-                        <Form.Group controlId="formEmail">
-                            <Form.Label>Email address</Form.Label>
-                            <Form.Control
-                                type="email"
-                                placeholder="Enter your email"
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                            />
-                        </Form.Group>
-                        <Button variant="primary" onClick={handleLogin} block>
-                            Login
-                        </Button>
-                        <Button
-                            variant="secondary"
-                            onClick={handleGuest}
-                            block
-                            className="mt-2"
-                        >
-                            Join as Guest
-                        </Button>
-                    </Form>
-                </Card.Body>
-            </StyledCard>
-        </LoginWrapper>
+        <Container className="d-flex align-items-center justify-content-center" style={{ minHeight: '100vh' }}>
+            <Row className="w-100">
+                <Col md={{ span: 6, offset: 3 }}>
+                    <Card className="login-card">
+                        <Card.Body>
+                            <h2 className="text-center mb-4">Login</h2>
+                            <Form>
+                                <Form.Group controlId="formEmail">
+                                    <Form.Label>Email address</Form.Label>
+                                    <Form.Control
+                                        type="email"
+                                        placeholder="Enter your email"
+                                        value={email}
+                                        onChange={(e) => setEmail(e.target.value)}
+                                    />
+                                </Form.Group>
+                                <Button variant="primary" onClick={handleLogin}
+                                        className="w-100"
+                                        block>
+                                    Login
+                                </Button>
+                                <Button
+                                    variant="secondary"
+                                    onClick={handleGuest}
+                                    block
+                                    className="mt-2 w-100"
+                                >
+                                    Join as Guest
+                                </Button>
+                            </Form>
+                        </Card.Body>
+                    </Card>
+                </Col>
+            </Row>
+        </Container>
     );
 };
 

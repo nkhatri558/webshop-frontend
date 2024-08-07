@@ -138,13 +138,20 @@ const Products = ({ cart, setCart, cartCount, setCartCount }) => {
             <Row>
                 {sortedAndFilteredProducts.map(product => (
                     <Col key={product.id} sm={12} md={6} lg={4}>
-                        <Card className="mb-4">
-                            <Card.Img variant="top" src={product.image} />
+                        <Card className="mb-4 product-card">
+                            <div className="product-image-container">
+                                <Card.Img
+                                    variant="top"
+                                    src={product.image}
+                                    alt={product.name}
+                                    className="product-image"
+                                />
+                            </div>
                             <Card.Body>
                                 <Card.Title>{product.name}</Card.Title>
                                 <Card.Text>
                                     {product.description}
-                                    <br />
+                                    <br/>
                                     <strong>${product.price}</strong>
                                 </Card.Text>
                                 <Form.Group controlId="formQuantity">
@@ -165,9 +172,9 @@ const Products = ({ cart, setCart, cartCount, setCartCount }) => {
                 ))}
             </Row>
             <ul className="pagination">
-                {Array.from({ length: Math.ceil(filteredProducts.length / productsPerPage) }, (_, index) => (
-                     <li key={index} className={`page-item ${currentPage === index + 1 ? 'active' : ''}`}>
-                         <button onClick={() => paginate(index + 1)} className="page-link">
+                {Array.from({length: Math.ceil(filteredProducts.length / productsPerPage)}, (_, index) => (
+                    <li key={index} className={`page-item ${currentPage === index + 1 ? 'active' : ''}`}>
+                        <button onClick={() => paginate(index + 1)} className="page-link">
                              {index + 1}
                          </button>
                      </li>
