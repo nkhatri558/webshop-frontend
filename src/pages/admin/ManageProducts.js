@@ -1,11 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import axios from '../../api/axios';
-import { Table, Button, Modal, Form } from 'react-bootstrap';
+import {Table, Button, Modal, Form, Pagination} from 'react-bootstrap';
 
 const ManageProducts = () => {
     const [products, setProducts] = useState([]);
+    const [searchTerm, setSearchTerm] = useState('');
     const [showModal, setShowModal] = useState(false);
     const [editingProduct, setEditingProduct] = useState(null);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [productsPerPage] = useState(5);
     const [formData, setFormData] = useState({
         name: '',
         description: '',
@@ -22,6 +25,20 @@ const ManageProducts = () => {
     const fetchProducts = async () => {
         const response = await axios.get('/products');
         setProducts(response.data);
+    };
+
+    const filteredProducts = products.filter(product =>
+        product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        product.category.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+
+    const indexOfLastProduct = currentPage * productsPerPage;
+    const indexOfFirstProduct = indexOfLastProduct - productsPerPage;
+    const currentProducts = filteredProducts.slice(indexOfFirstProduct, indexOfLastProduct);
+
+    const paginate = (pageNumber) => setCurrentPage(pageNumber);
+    const handleSearch = (event) => {
+        setSearchTerm(event.target.value);
     };
 
     const handleShow = (product) => {
@@ -87,7 +104,18 @@ const ManageProducts = () => {
 
     return (
         <div>
-            <Button variant="primary" onClick={() => handleShow(null)}>Add Product</Button>
+            <div className="row mb-2">
+                <div className="col-md-4">
+                    <Button variant="primary" onClick={() => handleShow(null)}>Add Product</Button>
+                </div>
+                <div className="col-md-2 ms-auto">
+                    <Form.Control type="text"
+                        placeholder="Search Products"
+                        value={searchTerm}
+                        onChange={handleSearch}
+                    />
+                </div>
+            </div>
             <Table striped bordered hover className="mt-4">
                 <thead>
                 <tr>
@@ -101,7 +129,7 @@ const ManageProducts = () => {
                 </tr>
                 </thead>
                 <tbody>
-                {products.map(product => (
+                {currentProducts.map(product => (
                     <tr key={product.id}>
                         <td><img src={product.image} alt={product.name} style={{ width: '100px' }} /></td>
                         <td>{product.name}</td>
@@ -117,6 +145,13 @@ const ManageProducts = () => {
                 ))}
                 </tbody>
             </Table>
+            <Pagination>
+                {[...Array(Math.ceil(filteredProducts.length / productsPerPage)).keys()].map(number => (
+                    <Pagination.Item key={number + 1} active={number + 1 === currentPage} onClick={() => paginate(number + 1)}>
+                        {number + 1}
+                    </Pagination.Item>
+                ))}
+            </Pagination>
 
             <Modal show={showModal} onHide={handleClose}>
                 <Modal.Header closeButton>

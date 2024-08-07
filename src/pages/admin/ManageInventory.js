@@ -11,7 +11,7 @@ const ManageInventory = () =>{
 
     const fetchProducts = async () => {
         const response = await axios.get('/products');
-        setProducts(response.data);
+        setProducts(response.data.filter(product => product.stock < 5));
     };
 
     return (

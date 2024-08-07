@@ -1,11 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import axios from '../../api/axios';
-import { Table, Button, Modal, Form } from 'react-bootstrap';
+import {Table, Button, Modal, Form, Pagination, Row, Col} from 'react-bootstrap';
 
 const ManageOrders = () => {
     const [orders, setOrders] = useState([]);
     const [showModal, setShowModal] = useState(false);
     const [editingOrder, setEditingOrder] = useState(null);
+    const [searchTerm, setSearchTerm] = useState('');
+    const [currentPage, setCurrentPage] = useState(1);
+    const [ordersPerPage] = useState(5);
     const [formData, setFormData] = useState({
         date: '',
         status: '',
@@ -36,11 +39,29 @@ const ManageOrders = () => {
                     console.log(response.data);
                     setOrders(response.data);
                 });
+            setOrders(response.data);
         } catch (error) {
             console.error('Error fetching orders:', error);
             setOrders([]);
         }
     };
+
+    const handleSearch = (event) => {
+        setSearchTerm(event.target.value);
+    };
+
+    const filteredOrders = orders.filter(order =>
+        order.customer.firstName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        order.customer.lastName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        order.status.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+
+    const indexOfLastOrder = currentPage * ordersPerPage;
+    const indexOfFirstOrder = indexOfLastOrder - ordersPerPage;
+    const currentOrders = filteredOrders.slice(indexOfFirstOrder, indexOfLastOrder);
+
+    const paginate = (pageNumber) => setCurrentPage(pageNumber);
+
 
     const handleShow = (order) => {
         setEditingOrder(order);
@@ -90,6 +111,16 @@ const ManageOrders = () => {
 
     return (
         <div>
+            <Row className="mb-3">
+                <Col md={4} className="ms-auto">
+                    <Form.Control
+                        type="text"
+                        placeholder="Search Orders"
+                        value={searchTerm}
+                        onChange={handleSearch}
+                    />
+                </Col>
+            </Row>
             <Table striped bordered hover className="mt-4">
                 <thead>
                 <tr>
@@ -102,7 +133,7 @@ const ManageOrders = () => {
                 </tr>
                 </thead>
                 <tbody>
-                {orders.map(order => (
+                {currentOrders.map(order => (
                     <tr key={order.id}>
                         <td>{order.id}</td>
                         <td>{order.date}</td>
@@ -124,6 +155,13 @@ const ManageOrders = () => {
                 ))}
                 </tbody>
             </Table>
+            <Pagination>
+                {[...Array(Math.ceil(filteredOrders.length / ordersPerPage)).keys()].map(number => (
+                    <Pagination.Item key={number + 1} active={number + 1 === currentPage} onClick={() => paginate(number + 1)}>
+                        {number + 1}
+                    </Pagination.Item>
+                ))}
+            </Pagination>
 
             <Modal show={showModal} onHide={handleClose}>
                 <Modal.Header closeButton>

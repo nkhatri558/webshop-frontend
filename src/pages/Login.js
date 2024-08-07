@@ -1,7 +1,24 @@
-import React, { useState, useContext } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Form, Button, Container, Row, Col } from 'react-bootstrap';
 import axios from '../api/axios';
+import styled from 'styled-components';
+import { Form, Button, Card } from 'react-bootstrap';
+
+const LoginWrapper = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background-color: #f8f9fa;
+`;
+
+const StyledCard = styled(Card)`
+  padding: 20px;
+  width: 100%;
+  max-width: 400px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+`;
 
 const Login = () => {
     const [email, setEmail] = useState('');
@@ -18,9 +35,7 @@ const Login = () => {
                 console.log(`Customer Data: ${response.data}`);
                 if (response.data) {
                     const customer = response.data;
-                    const user = {firstName: customer.firstName, email: customer.email, role: 'customer'};
-                    console.log(user);
-                    // login({ ...response.data, role: 'customer' });
+                    const user = {id: customer.id, firstName: customer.firstName, email: customer.email, role: 'customer'};
                     sessionStorage.setItem("user", JSON.stringify(user));
                     navigate('/customer');
                 } else {
@@ -38,30 +53,35 @@ const Login = () => {
     };
 
     return (
-        <Container>
-            <Row className="justify-content-md-center mt-5">
-                <Col md="4">
-                    <h2>Login</h2>
+        <LoginWrapper>
+            <StyledCard>
+                <Card.Body>
+                    <Card.Title className="text-center">Login</Card.Title>
                     <Form>
                         <Form.Group controlId="formEmail">
                             <Form.Label>Email address</Form.Label>
                             <Form.Control
                                 type="email"
-                                placeholder="Enter email"
+                                placeholder="Enter your email"
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
                             />
                         </Form.Group>
-                        <Button variant="primary" onClick={handleLogin}>
+                        <Button variant="primary" onClick={handleLogin} block>
                             Login
                         </Button>
-                        <Button variant="secondary" onClick={handleGuest} className="ml-2">
+                        <Button
+                            variant="secondary"
+                            onClick={handleGuest}
+                            block
+                            className="mt-2"
+                        >
                             Join as Guest
                         </Button>
                     </Form>
-                </Col>
-            </Row>
-        </Container>
+                </Card.Body>
+            </StyledCard>
+        </LoginWrapper>
     );
 };
 

@@ -10,7 +10,7 @@ const Products = ({ cart, setCart, cartCount, setCartCount }) => {
     const [selectedCategory, setSelectedCategory] = useState('');
     const [products, setProducts] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
-    const [productQuantity, setProductQuantity] = useState(1);
+    const [productQuantities, setProductQuantities] = useState({});
     const productsPerPage = 9;
 
     const fetchProducts = async () => {
@@ -18,11 +18,16 @@ const Products = ({ cart, setCart, cartCount, setCartCount }) => {
             const response = await axios
                 .get("/products")
                 .then( response => {
-                    console.log(response.data);
                     setProducts(response.data);
+                    const initialQuantities = response.data.reduce((acc, product) => {
+                        acc[product.id] = 1;
+                        return acc;
+                    }, {});
+                    setProductQuantities(initialQuantities);
                     }
                 );
             setProducts(response.data);
+
         } catch (error) {
             console.error("Error fetching products:", error);
         }
@@ -37,18 +42,17 @@ const Products = ({ cart, setCart, cartCount, setCartCount }) => {
 
     const addToCart = (product) => {
         const updatedCart = [...cart];
-        const found = updatedCart.find(item => item.id === product.id);
-        let quant = 1;
-
-        if (found) {
-            found.quantity += 1;
-            quant = found.quantity;
-        } else {
-            updatedCart.push({ ...product, quantity: 1 });
-        }
+        // const found = updatedCart.find(item => item.id === product.id);
+        // let quant = 1;
+        //
+        // if (found) {
+        //     productQuantities[found.id] += productQuantities[product.id];
+        // } else {
+        //     updatedCart.push({ ...product, quantity:productQuantities[found.id] });
+        // }
+        updatedCart.push({...product, quantity: productQuantities[product.id] > 0 ? productQuantities[product.id] : 1});
 
         setCart(updatedCart);
-        setCartCount(cartCount + quant);
         Swal.fire({
             icon: 'success',
             title: 'Added to Cart',
@@ -89,6 +93,13 @@ const Products = ({ cart, setCart, cartCount, setCartCount }) => {
         });
 
     const uniqueCategories = [...new Set(products.map(product => product.category))];
+
+    const handleQuantityChange = (productId, event) => {
+        setProductQuantities({
+            ...productQuantities,
+            [productId]: Number(event.target.value),
+        });
+    };
 
 
 
@@ -141,8 +152,8 @@ const Products = ({ cart, setCart, cartCount, setCartCount }) => {
                                     <Form.Control
                                         type="number"
                                         min="1"
-                                        value={productQuantity}
-                                        onChange={(e) => setProductQuantity(parseInt(e.target.value))}
+                                        value={productQuantities[product.id]}
+                                        onChange={(event) => handleQuantityChange(product.id, event)}
                                     />
                                 </Form.Group>
                                 <Button variant="primary" onClick={() => addToCart(product)}>

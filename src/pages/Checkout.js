@@ -1,5 +1,5 @@
 // src/pages/Checkout.js
-import React, { useState } from 'react';
+import React, {useState} from 'react';
 import { Container } from 'react-bootstrap';
 import AddressForm from '../components/AddressForm';
 import PaymentForm from '../components/PaymentForm';
@@ -24,6 +24,23 @@ const Checkout = ({cart}) => {
         expiryDate: '',
         cvv: ''
     };
+    // const user = JSON.parse(sessionStorage.getItem("user"));
+    // const fetchCustomer = async () => {
+    //     try {
+    //         const response = await axios
+    //             .get(`/customers/${user.id}`)
+    //             .then(response => {
+    //                 console.log(response.data);
+    //                 setFormData(response.data)
+    //             });
+    //         setFormData(response.data);
+    //     } catch (error) {
+    //         console.error("Error fetching products:", error);
+    //     }
+    // };
+    // useEffect(() => {
+    //     fetchCustomer();
+    // });
     const [formData, setFormData] = useState(initialCustomerState);
     const navigate = useNavigate();
 
@@ -58,15 +75,6 @@ const Checkout = ({cart}) => {
             }))
         };
         console.log(order);
-        // try {
-        //     const response = await axios.post("/customers", formData);
-        //     if (response.status === 201) {
-        //         alert("Checkout successful!");
-        //     }
-        // } catch (error) {
-        //     console.error("Error during checkout:", error);
-        //     alert("Checkout failed.");
-        // }
 
         try {
             const response = await axios.post("/orders", order);

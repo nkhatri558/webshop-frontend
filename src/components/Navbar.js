@@ -1,10 +1,9 @@
 // src/components/Navbar.js
-import React, {useContext} from 'react';
-// import { Link } from 'react-router-dom';
 import '../css/Navbar.css';
-import {Nav, Navbar} from "react-bootstrap";
+import {Button, Nav, Navbar} from "react-bootstrap";
 import {LinkContainer} from "react-router-bootstrap";
-import {Link, useNavigate} from "react-router-dom";
+import {useNavigate} from "react-router-dom";
+import React from "react";
 
 const NavigationBar = () => {
     const navigate = useNavigate();
@@ -15,7 +14,7 @@ const NavigationBar = () => {
     }
     return (
         <Navbar bg="dark" variant="dark" expand="lg">
-            <Navbar.Brand href="/">Web shop</Navbar.Brand>
+            <Navbar.Brand href="/">Webshop</Navbar.Brand>
             <Navbar.Toggle aria-controls="basic-navbar-nav" />
             <Navbar.Collapse id="basic-navbar-nav">
                 <Nav className="mr-auto">
@@ -29,39 +28,23 @@ const NavigationBar = () => {
                         <Nav.Link>Cart</Nav.Link>
                     </LinkContainer>
                 </Nav>
-                <Navbar.Text>
-                    Signed in as: {user ? user.firstName || 'Guest' : 'Guest'}
-                </Navbar.Text>
-                {user ? (<>
-                    <button onClick={handleLogout}>Logout</button>
-                </>) :
-                    (<Link to="/login">Login</Link>)
-                }
+                <Nav className="ms-auto">
+                    <Navbar.Text className="me-3">
+                        {user ? `Signed in as: ${user.firstName}`
+                            || 'Joined in as: Guest' : 'Joined in as: Guest'}
+                    </Navbar.Text>
+                    {user ? (<>
+                            <Button variant="outline-secondary" onClick={handleLogout}>
+                                Logout
+                            </Button>
+                    </>) :
+                        (<Button variant="outline-secondary" onClick={()=>navigate('/login')}>
+                            Login
+                        </Button>)
+                    }
+                </Nav>
             </Navbar.Collapse>
         </Navbar>
-        // <nav className="navbar navbar-expand-lg navbar-light bg-light">
-        //     <div className="container">
-        //         <Link className="navbar-brand" to="/">Webshop</Link>
-        //         <div className="collapse navbar-collapse" id="navbarNav">
-        //             <ul className="navbar-nav ml-auto">
-        //                 <li className="nav-item">
-        //                     <Link className="nav-link" to="/">Products</Link>
-        //                 </li>
-        //                 <li className="nav-item">
-        //                     <Link className="nav-link" to="/orders">Orders</Link>
-        //                 </li>
-        //                 <li className="nav-item">
-        //                     <Link className="nav-link" to="/cart">
-        //                         Cart <span className="badge badge-pill badge-primary"></span>
-        //                     </Link>
-        //                 </li>
-        //             </ul>
-        //             <Navbar.Text>
-        //                 Signed in as: {user ? user.firstName || 'Guest' : 'Guest'}
-        //             </Navbar.Text>
-        //         </div>
-        //     </div>
-        // </nav>
     );
 };
 

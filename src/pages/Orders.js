@@ -8,12 +8,9 @@ import axios from '../api/axios';
 const Orders = () => {
     const user = JSON.parse(sessionStorage.getItem("user"));
     const [orders, setOrders] = useState([]);
+
     const fetchOrders = async () => {
         try {
-            console.log(user);
-            console.log(user.email);
-            const url = `/orders/customer?email=${user.email}`;
-            console.log(url);
             const response = await axios
                 .get(`/orders/customer?email=${user.email}`)
                 .then(response => {
@@ -27,7 +24,7 @@ const Orders = () => {
     };
     useEffect(() => {
         fetchOrders();
-    }, []);
+    });
     const [viewingOrder, setViewingOrder] = useState(null);
     const [showModal, setShowModal] = useState(false);
 
